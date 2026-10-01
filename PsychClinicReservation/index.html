@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>نوبت‌دهی کلینیک آرامش‌نو</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;600;700&family=Vazirmatn:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: sticky role bar on top, one centered column (max 1120px) whose content switches per role; side panels stack under 820px. */
+:root{
+  --bg:#F2F5F4; --surface:#FFFFFF; --surface-2:#E8EEEC; --ink:#1B2826; --muted:#5B6C68; --line:#D3DDDA;
+  --accent:#2F5D50; --accent-ink:#FFFFFF; --accent-soft:#DCEBE5; --plum:#6B4E71; --plum-soft:#EFE6F1;
+  --ok:#2E7D4F; --ok-soft:#E0F2E7; --warn:#9A6B00; --warn-soft:#FBF0D3; --bad:#B23A3A; --bad-soft:#F8E1E1;
+  --shadow:0 1px 2px rgba(20,40,35,.06),0 8px 24px rgba(20,40,35,.06);
+  --f-display:"Reem Kufi","Vazirmatn",Tahoma,sans-serif;
+  --f-body:"Vazirmatn",Tahoma,"Segoe UI",sans-serif;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101715; --surface:#172120; --surface-2:#1E2B28; --ink:#E4EDEA; --muted:#9AADA8; --line:#2B3A37;
+  --accent:#7FBFA9; --accent-ink:#0D1614; --accent-soft:#1E3A32; --plum:#C9A9D0; --plum-soft:#2E2433;
+  --ok:#6FCB94; --ok-soft:#173326; --warn:#E3B54F; --warn-soft:#352A10; --bad:#EE8A8A; --bad-soft:#3A1C1C;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101715; --surface:#172120; --surface-2:#1E2B28; --ink:#E4EDEA; --muted:#9AADA8; --line:#2B3A37;
+  --accent:#7FBFA9; --accent-ink:#0D1614; --accent-soft:#1E3A32; --plum:#C9A9D0; --plum-soft:#2E2433;
+  --ok:#6FCB94; --ok-soft:#173326; --warn:#E3B54F; --warn-soft:#352A10; --bad:#EE8A8A; --bad-soft:#3A1C1C;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{direction:rtl}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.75;margin:0;direction:rtl}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--f-display);font-weight:600;line-height:1.35;text-wrap:balance;margin:0}
+h1{font-size:clamp(1.6rem,3.6vw,2.3rem)}
+h2{font-size:1.3rem}
+h3{font-size:1.05rem}
+p{margin:0}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* top bar */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:10px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;margin-inline-end:auto}
+.brand-mark{width:38px;height:38px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--f-display);font-size:1.2rem}
+.brand b{font-family:var(--f-display);font-size:1.15rem;font-weight:600;display:block;line-height:1.2}
+.brand span{font-size:.78rem;color:var(--muted)}
+.roles{display:flex;background:var(--surface-2);border-radius:999px;padding:4px;gap:2px}
+.roles button{border:0;background:transparent;padding:6px 14px;border-radius:999px;cursor:pointer;font-size:.9rem;color:var(--muted);white-space:nowrap}
+.roles button[aria-pressed="true"]{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:var(--shadow)}
+.bell{position:relative;border:1px solid var(--line);background:var(--surface);width:40px;height:40px;border-radius:50%;cursor:pointer;display:grid;place-items:center}
+.bell svg{width:20px;height:20px;stroke:var(--ink)}
+.bell .count{position:absolute;top:-4px;left:-4px;min-width:20px;height:20px;border-radius:10px;background:var(--bad);color:#fff;font-size:.72rem;display:grid;place-items:center;padding-inline:5px;font-weight:700}
+.demo-strip{background:var(--plum-soft);color:var(--plum);font-size:.82rem;text-align:center;padding-block:6px;padding-inline:16px}
+
+main{max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:24px 64px;display:grid;gap:24px}
+
+/* generic */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.btn{border:1px solid transparent;background:var(--accent);color:var(--accent-ink);padding:10px 18px;border-radius:10px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:8px;justify-content:center;text-decoration:none}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.danger{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.btn.sm{padding:6px 12px;font-size:.85rem;border-radius:8px}
+.link{background:none;border:0;color:var(--accent);cursor:pointer;padding:0;font-weight:600}
+.tag{display:inline-block;background:var(--surface-2);color:var(--muted);border-radius:6px;padding:1px 8px;font-size:.8rem}
+.chip{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:1px 10px;font-size:.78rem;font-weight:600}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.info{background:var(--accent-soft);color:var(--accent)}
+.chip.plum{background:var(--plum-soft);color:var(--plum)}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.stack{display:grid;gap:12px}
+.eyebrow{font-size:.78rem;letter-spacing:.04em;color:var(--muted);font-weight:600}
+label.f{display:grid;gap:6px;font-size:.9rem;font-weight:500}
+.input,select.input,textarea.input{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 12px;min-width:0}
+textarea.input{min-height:90px;resize:vertical}
+.input.ltr{direction:ltr;text-align:left}
+.err{color:var(--bad);font-size:.82rem;min-height:1.2em}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.back{display:inline-flex;gap:6px;align-items:center}
+
+/* hero + steps */
+.hero{display:grid;grid-template-columns:1.4fr 1fr;gap:24px;align-items:end}
+.hero p{color:var(--muted);max-width:60ch;margin-top:8px}
+.steps{display:flex;gap:8px;flex-wrap:wrap;list-style:none;padding:0;margin:0}
+.steps li{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 12px 4px 6px;font-size:.85rem}
+.steps li b{width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:.8rem}
+.steps li.on{border-color:var(--accent)}
+.steps li.on b{background:var(--accent);color:var(--accent-ink)}
+.steps li.done b{background:var(--ok);color:#fff}
+
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.fchip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 14px;cursor:pointer;font-size:.88rem}
+.fchip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* psychologist cards */
+.psy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.psy{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:grid;gap:12px;grid-template-rows:auto auto 1fr auto}
+.psy-head{display:flex;gap:12px;align-items:center}
+.avatar{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-display);font-size:1.3rem;color:#fff;flex:none}
+.avatar.lg{width:84px;height:84px;font-size:1.9rem}
+.psy-head h3{font-size:1.08rem}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:.88rem}
+.meta dt{color:var(--muted)}
+.meta dd{margin:0}
+.next{background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:8px 12px;font-size:.88rem}
+
+/* booking layout */
+.split{display:grid;grid-template-columns:320px 1fr;gap:20px;align-items:start}
+.split > *{min-width:0}
+.profile{display:grid;gap:14px}
+.profile .bio{font-size:.92rem;color:var(--muted)}
+.dates{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+.date{flex:none;width:82px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 4px;cursor:pointer;text-align:center;display:grid;gap:0}
+.date .dn{font-size:.78rem;color:var(--muted)}
+.date .dd{font-family:var(--f-display);font-size:1.45rem;line-height:1.3}
+.date .dm{font-size:.75rem;color:var(--muted)}
+.date .df{font-size:.72rem;margin-top:2px;color:var(--ok);font-weight:600}
+.date:disabled{opacity:.45;cursor:not-allowed}
+.date:disabled .df{color:var(--muted)}
+.date[aria-pressed="true"]{background:var(--accent);border-color:var(--accent)}
+.date[aria-pressed="true"] *{color:var(--accent-ink)!important}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+.slot{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 6px;cursor:pointer;text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
+.slot small{display:block;font-weight:400;font-size:.72rem;color:var(--muted)}
+.slot:hover:not(:disabled){border-color:var(--accent)}
+.slot:disabled{cursor:not-allowed;background:var(--surface-2);color:var(--muted);text-decoration:line-through}
+.slot:disabled small{text-decoration:none}
+.slot[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.slot[aria-pressed="true"] small{color:var(--accent-ink)}
+.summary{position:sticky;top:90px;display:grid;gap:12px}
+.sumrow{display:flex;justify-content:space-between;gap:12px;font-size:.92rem;border-bottom:1px dashed var(--line);padding-bottom:8px}
+.sumrow:last-of-type{border-bottom:0}
+.sumrow span:first-child{color:var(--muted)}
+.total{font-family:var(--f-display);font-size:1.3rem}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid var(--line);vertical-align:middle;margin-inline-end:4px}
+
+/* gateway */
+.gw{max-width:560px;margin:0 auto;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+.gw-head{background:var(--ink);color:var(--bg);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.gw-head b{font-family:var(--f-display);font-weight:600}
+.gw-timer{background:rgba(255,255,255,.12);border-radius:8px;padding:2px 10px;font-variant-numeric:tabular-nums}
+.gw-body{padding:20px;display:grid;gap:14px}
+.gw-amount{display:flex;justify-content:space-between;align-items:center;background:var(--surface-2);border-radius:10px;padding:12px 14px;gap:12px;flex-wrap:wrap}
+.card-in{letter-spacing:.12em;font-variant-numeric:tabular-nums}
+.exp{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:10px}
+.otp{display:grid;grid-template-columns:1fr auto;gap:8px}
+.processing{display:grid;place-items:center;gap:12px;padding:40px 20px;text-align:center}
+.spinner{width:42px;height:42px;border:4px solid var(--surface-2);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* success */
+.success-head{display:grid;gap:8px;text-align:center;justify-items:center}
+.check{width:64px;height:64px;border-radius:50%;background:var(--ok-soft);color:var(--ok);display:grid;place-items:center}
+.check svg{width:34px;height:34px;stroke:currentColor}
+.code{font-family:ui-monospace,Menlo,Consolas,monospace;direction:ltr;display:inline-block;background:var(--surface-2);padding:2px 10px;border-radius:6px;font-weight:700;letter-spacing:.06em}
+.dispatch{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.dispatch .who{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.msg{background:var(--surface-2);border-radius:12px;padding:12px;font-size:.88rem;line-height:1.8}
+
+/* panel */
+.panel-head{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.panel-head .grow{margin-inline-end:auto}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs button{border:0;background:none;padding:10px 14px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;font-weight:500}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.kpi .v{font-family:var(--f-display);font-size:1.7rem;line-height:1.3;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:.82rem;color:var(--muted)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:right;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}
+th{font-size:.78rem;color:var(--muted);font-weight:600;background:var(--surface-2)}
+tr:last-child td{border-bottom:0}
+.bar{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden;min-width:80px}
+.bar i{display:block;height:100%;background:var(--accent)}
+
+.week{display:grid;gap:8px}
+.wrow{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.wrow:last-child{border-bottom:0}
+.wrow .times{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.wrow select{width:auto}
+.switch{display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:600}
+.switch input{width:18px;height:18px;accent-color:var(--accent)}
+.avail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.av{border:1px solid var(--line);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:var(--surface);font-weight:600;font-variant-numeric:tabular-nums}
+.av small{display:block;font-weight:500;font-size:.72rem}
+.av.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.av.off{color:var(--muted);background:var(--surface-2);border-style:dashed}
+.av.booked{background:var(--plum-soft);border-color:var(--plum);color:var(--plum);cursor:not-allowed}
+.login{max-width:440px;margin:24px auto;width:100%}
+.booking-list{display:grid;gap:10px}
+.bk{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px}
+.bk .t{font-family:var(--f-display);font-size:1.25rem;font-variant-numeric:tabular-nums;color:var(--accent)}
+.bk > div{min-width:0}
+.day-label{font-weight:700;font-size:.9rem;color:var(--muted);margin-top:8px}
+
+/* drawer + toast */
+.scrim{position:fixed;inset:0;background:rgba(10,20,18,.4);z-index:40}
+.drawer{position:fixed;top:0;bottom:0;left:0;width:min(420px,100%);background:var(--surface);z-index:41;display:grid;grid-template-rows:auto 1fr;box-shadow:var(--shadow);padding-top:env(safe-area-inset-top,0px)}
+.drawer-h{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line);gap:12px}
+.drawer-b{overflow-y:auto;padding:14px 18px;display:grid;gap:10px;align-content:start;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+.note{border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:6px;background:var(--surface)}
+.note.unread{border-color:var(--accent);background:var(--accent-soft)}
+.note .nt{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.note p{font-size:.88rem}
+.toasts{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));right:16px;left:16px;display:grid;gap:8px;justify-items:center;z-index:60;pointer-events:none}
+.toast{background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;box-shadow:var(--shadow);font-size:.9rem;max-width:520px;animation:up .25s ease}
+@keyframes up{from{transform:translateY(8px);opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+footer{max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:0 32px;color:var(--muted);font-size:.82rem}
+
+@media (max-width:820px){
+  .hero,.split{grid-template-columns:1fr}
+  .summary{position:static}
+  .wrow{grid-template-columns:1fr}
+  .roles button{padding:6px 10px;font-size:.84rem}
+}
+@media (max-width:480px){
+  .brand span{display:none}
+  .bk{grid-template-columns:auto 1fr}
+  .bk > :last-child{grid-column:1 / -1}
+  .exp{grid-template-columns:1fr 1fr}
+  .exp > :last-child{grid-column:1 / -1}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">آ</div>
+      <div><b>کلینیک آرامش‌نو</b><span>مرکز مشاوره و خدمات روان‌شناختی</span></div>
+    </div>
+    <nav class="roles" aria-label="نقش کاربر">
+      <button type="button" data-act="role" data-role="visitor" id="role-visitor">رزرو نوبت</button>
+      <button type="button" data-act="role" data-role="psy" id="role-psy">پنل روانشناس</button>
+      <button type="button" data-act="role" data-role="manager" id="role-manager">پنل مدیر</button>
+    </nav>
+    <button type="button" class="bell" data-act="drawer" id="bell" aria-label="اعلان‌ها">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      <span class="count" id="bell-count" hidden>0</span>
+    </button>
+  </div>
+  <div class="demo-strip">نسخهٔ نمایشی: پرداخت، پیامک و ایمیل شبیه‌سازی می‌شوند و همهٔ داده‌ها فقط در همین مرورگر ذخیره می‌شوند.</div>
+</header>
+
+<main id="app"></main>
+<footer>
+  <div class="row" style="justify-content:space-between">
+    <span>کلینیک آرامش‌نو · نمونهٔ نمایشی سامانهٔ نوبت‌دهی</span>
+    <button type="button" class="link" data-act="reset">بازنشانی داده‌های نمایشی</button>
+  </div>
+</footer>
+<div id="drawer-root"></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+/* ---------- helpers ---------- */
+const LS='aramesh_clinic_demo_v1';
+const pad=n=>String(n).padStart(2,'0');
+const keyOf=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parseKey=k=>{const[y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d)};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
+const FA='۰۱۲۳۴۵۶۷۸۹';
+const fa=s=>String(s).replace(/\d/g,c=>FA[c]);
+const toEn=s=>String(s??'').replace(/[۰-۹]/g,c=>FA.indexOf(c)).replace(/[٠-٩]/g,c=>'٠١٢٣٤٥٦٧٨٩'.indexOf(c));
+const dtf=(o)=>new Intl.DateTimeFormat('fa-IR-u-ca-persian',o);
+const fmt=(k,o)=>dtf(o).format(parseKey(k));
+const fullDate=k=>`${fmt(k,{weekday:'long'})} ${fmt(k,{day:'numeric'})} ${fmt(k,{month:'long'})} ${fmt(k,{year:'numeric'}).replace(/[^۰-۹]/g,'')}`;
+const shortDate=k=>fmt(k,{weekday:'long',day:'numeric',month:'long'});
+const money=n=>fa(Number(n).toLocaleString('en-US')).replace(/,/g,'٬')+' تومان';
+const WEEK=['شنبه','یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه'];
+const pIdx=d=>(d.getDay()+1)%7; // 0 = Saturday
+const toMin=t=>{const[h,m]=t.split(':').map(Number);return h*60+m};
+const toTime=m=>pad(Math.floor(m/60))+':'+pad(m%60);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const stamp=t=>dtf({day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}).format(new Date(t));
+const HOURS=[];for(let h=7;h<=21;h++)HOURS.push(pad(h)+':00');
+const GRID_HOURS=HOURS.filter(h=>toMin(h)>=480&&toMin(h)<=1200);
+
+/* ---------- seed data ---------- */
+function wk(spec){ // spec: {dayIndex:[start,end]}
+  return WEEK.map((_,i)=>spec[i]?{on:true,start:spec[i][0],end:spec[i][1]}:{on:false,start:'09:00',end:'13:00'});
+}
+function seed(){
+  const psychologists=[
+    {id:'p1',name:'دکتر نسترن الهی',title:'دکتری روانشناسی بالینی',license:'۱۲۴۸۷',years:12,color:'#2F5D50',
+     approaches:['شناختی‌رفتاری (CBT)','اضطراب','افسردگی'],modes:['حضوری','آنلاین'],price:850000,duration:50,phone:'09120000001',
+     bio:'درمان اختلالات اضطرابی، وسواس و افسردگی با رویکرد شناختی‌رفتاری. دوازده سال سابقهٔ کار بالینی در بیمارستان و مطب.',
+     weekly:wk({0:['09:00','13:00'],1:['15:00','19:00'],2:['09:00','13:00'],3:['15:00','19:00'],4:['09:00','12:00']}),overrides:{}},
+    {id:'p2',name:'دکتر کاوه مرادی',title:'دکتری مشاورهٔ خانواده',license:'۰۹۸۱۵',years:9,color:'#6B4E71',
+     approaches:['زوج‌درمانی','هیجان‌مدار (EFT)','پیش از ازدواج'],modes:['حضوری','آنلاین'],price:950000,duration:50,phone:'09120000002',
+     bio:'زوج‌درمانی هیجان‌مدار، مشاورهٔ پیش از ازدواج و حل تعارض‌های خانوادگی. جلسات زوج ۷۵ دقیقه‌ای با هماهنگی قبلی.',
+     weekly:wk({0:['16:00','20:00'],2:['16:00','20:00'],4:['10:00','14:00'],5:['10:00','13:00']}),overrides:{}},
+    {id:'p3',name:'مهسا رحیمی',title:'کارشناس ارشد روانشناسی کودک',license:'۲۰۳۳۹',years:6,color:'#A0603A',
+     approaches:['کودک و نوجوان','بازی‌درمانی','بیش‌فعالی (ADHD)'],modes:['حضوری'],price:650000,duration:50,phone:'09120000003',
+     bio:'ارزیابی و درمان کودکان ۴ تا ۱۴ سال، بازی‌درمانی و آموزش فرزندپروری به والدین. جلسات فقط حضوری برگزار می‌شوند.',
+     weekly:wk({1:['09:00','14:00'],3:['09:00','14:00'],5:['09:00','12:00']}),overrides:{}},
+    {id:'p4',name:'دکتر آرش فرهمند',title:'روانپزشک و روان‌درمانگر',license:'۰۷۷۲۱',years:15,color:'#3D5A80',
+     approaches:['روان‌درمانی تحلیلی','پذیرش و تعهد (ACT)','افسردگی'],modes:['آنلاین','حضوری'],price:1100000,duration:50,phone:'09120000004',
+     bio:'روان‌درمانی بلندمدت تحلیلی و درمان مبتنی بر پذیرش و تعهد برای بزرگسالان. ارزیابی دارویی در صورت نیاز.',
+     weekly:wk({0:['10:00','14:00'],1:['10:00','14:00'],2:['17:00','20:00'],3:['10:00','14:00']}),overrides:{}},
+  ];
+  const s={psychologists,bookings:[],notifications:[],settings:{patientSms:true,patientEmail:true,psySms:true,managerEmail:true,reminder:true}};
+  // a few existing paid bookings so the calendar looks lived-in
+  const names=[['سارا کریمی','09121112233'],['امید نوروزی','09351234567'],['لیلا صادقی','09198887766'],['رضا تهرانی','09125550011'],['نگار حسینی','09017778899'],['پویا اکبری','09123334455']];
+  let n=0;const t=today();
+  psychologists.forEach(p=>{
+    let made=0;
+    for(let d=1;d<9&&made<2;d++){
+      const k=keyOf(addDays(t,d));const sl=slotsFor(p,k,s);
+      if(sl.length>1){const [nm,ph]=names[n%names.length];n++;
+        s.bookings.push(mkBooking(p,k,sl[made%sl.length],{name:nm,phone:ph,email:'',mode:p.modes[0],note:''},Date.now()-86400000*(3-made)));made++;}
+    }
+  });
+  s.notifications.push({id:uid(),to:'manager',channels:['پنل'],title:'گزارش روزانه آماده است',body:`${fa(s.bookings.length)} نوبت پرداخت‌شده برای روزهای آینده ثبت شده است.`,at:Date.now()-3600000,read:false});
+  return s;
+}
+function uid(){return Math.random().toString(36).slice(2,10)}
+function mkCode(){return 'AR-'+String(Math.floor(100000+Math.random()*900000))}
+function mkBooking(p,date,time,f,created){
+  return {id:uid(),code:mkCode(),psyId:p.id,date,time,patient:{name:f.name,phone:f.phone,email:f.email||''},mode:f.mode,note:f.note||'',amount:p.price,status:'paid',createdAt:created||Date.now()};
+}
+
+/* ---------- state ---------- */
+let S;
+function load(){try{const raw=localStorage.getItem(LS);if(raw){S=JSON.parse(raw);if(S&&S.psychologists)return}}catch(e){}S=seed();save()}
+function save(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}
+const U={role:'visitor',step:'list',psyId:null,date:null,time:null,form:{name:'',phone:'',email:'',mode:'',note:'',consent:false},
+  filter:'',modeFilter:'',psyLogged:null,mgrLogged:false,psyTab:'bookings',mgrTab:'bookings',availDate:null,mgrPsy:'',
+  pay:null,last:null,drawer:false,confirmCancel:null};
+
+const psy=id=>S.psychologists.find(p=>p.id===id);
+function weeklySlots(p,k){
+  const w=p.weekly[pIdx(parseKey(k))];if(!w||!w.on)return [];
+  const out=[];for(let m=toMin(w.start);m+60<=toMin(w.end);m+=60)out.push(toTime(m));return out;
+}
+function slotsFor(p,k,st){ // all offered times (booked or not), future only
+  const list=(p.overrides&&p.overrides[k])?p.overrides[k].slice().sort():weeklySlots(p,k);
+  if(k===keyOf(today())){const now=new Date();const nm=now.getHours()*60+now.getMinutes();return list.filter(t=>toMin(t)>nm+30)}
+  return list;
+}
+const active=b=>b.status!=='cancelled';
+const isBooked=(pid,k,t)=>S.bookings.some(b=>active(b)&&b.psyId===pid&&b.date===k&&b.time===t);
+const freeSlots=(p,k)=>slotsFor(p,k).filter(t=>!isBooked(p.id,k,t));
+function nextFree(p){for(let i=0;i<30;i++){const k=keyOf(addDays(today(),i));const f=freeSlots(p,k);if(f.length)return{k,t:f[0]}}return null}
+const days=n=>Array.from({length:n},(_,i)=>keyOf(addDays(today(),i)));
+
+function notify(to,channels,title,body,extra){S.notifications.unshift(Object.assign({id:uid(),to,channels,title,body,at:Date.now(),read:false},extra||{}))}
+function inbox(){
+  if(U.role==='visitor')return S.notifications.filter(n=>n.to==='patient');
+  if(U.role==='psy')return U.psyLogged?S.notifications.filter(n=>n.to==='psy'&&n.psyId===U.psyLogged):[];
+  return U.mgrLogged?S.notifications.filter(n=>n.to==='manager'):[];
+}
+
+/* ---------- toast ---------- */
+function toast(msg){const el=document.createElement('div');el.className='toast';el.textContent=msg;document.getElementById('toasts').appendChild(el);setTimeout(()=>el.remove(),4200)}
+
+/* ---------- views: visitor ---------- */
+function stepsBar(cur){
+  const st=['انتخاب روانشناس','انتخاب روز و ساعت','مشخصات مراجع','پرداخت آنلاین'];
+  return `<ol class="steps" aria-label="مراحل رزرو">${st.map((s,i)=>`<li class="${i<cur?'done':i===cur?'on':''}"><b>${i<cur?'✓':fa(i+1)}</b>${s}</li>`).join('')}</ol>`;
+}
+function avatar(p,lg){const ini=p.name.replace('دکتر ','').split(' ').map(w=>w[0]).join('‌');return `<div class="avatar${lg?' lg':''}" style="background:${p.color}" aria-hidden="true">${esc(ini)}</div>`}
+
+function vList(){
+  const all=[...new Set(S.psychologists.flatMap(p=>p.approaches))];
+  const list=S.psychologists.filter(p=>(!U.filter||p.approaches.includes(U.filter))&&(!U.modeFilter||p.modes.includes(U.modeFilter)));
+  return `
+  <section class="hero">
+    <div>
+      <div class="eyebrow">نوبت‌دهی آنلاین</div>
+      <h1>جلسهٔ مشاوره‌تان را همین حالا رزرو کنید</h1>
+      <p>زمان‌های خالی هر روانشناس به‌صورت زنده نمایش داده می‌شود. پس از پرداخت، نوبت قطعی است و پیامک تأیید با کد رهگیری برایتان ارسال می‌شود.</p>
+    </div>
+    ${stepsBar(0)}
+  </section>
+  <section class="stack">
+    <div class="filters" role="group" aria-label="فیلتر حوزهٔ درمان">
+      <button type="button" class="fchip" data-act="filter" data-v="" aria-pressed="${!U.filter}">همهٔ حوزه‌ها</button>
+      ${all.map(a=>`<button type="button" class="fchip" data-act="filter" data-v="${esc(a)}" aria-pressed="${U.filter===a}">${esc(a)}</button>`).join('')}
+    </div>
+    <div class="filters" role="group" aria-label="نوع جلسه">
+      <span class="muted small">نوع جلسه:</span>
+      ${['','حضوری','آنلاین'].map(m=>`<button type="button" class="fchip" data-act="modef" data-v="${m}" aria-pressed="${U.modeFilter===m}">${m||'فرقی ندارد'}</button>`).join('')}
+    </div>
+  </section>
+  <section class="psy-grid">
+    ${list.length?list.map(p=>{const nx=nextFree(p);return `
+      <article class="psy">
+        <div class="psy-head">${avatar(p)}<div><h3>${esc(p.name)}</h3><div class="muted small">${esc(p.title)}</div></div></div>
+        <div class="row" style="gap:6px">${p.approaches.map(a=>`<span class="tag">${esc(a)}</span>`).join('')}</div>
+        <dl class="meta">
+          <dt>شمارهٔ نظام</dt><dd class="num">${esc(p.license)}</dd>
+          <dt>سابقه</dt><dd>${fa(p.years)} سال</dd>
+          <dt>جلسه</dt><dd>${fa(p.duration)} دقیقه · ${p.modes.join(' و ')}</dd>
+          <dt>هزینه</dt><dd class="num"><b>${money(p.price)}</b></dd>
+        </dl>
+        <div class="stack" style="gap:10px">
+          <div class="next">${nx?`نزدیک‌ترین نوبت خالی: <b>${shortDate(nx.k)}، ساعت ${fa(nx.t)}</b>`:'فعلاً نوبت خالی ندارد'}</div>
+          <button type="button" class="btn" data-act="pick" data-id="${p.id}">مشاهدهٔ زمان‌ها و رزرو</button>
+        </div>
+      </article>`}).join(''):`<div class="card muted">روانشناسی با این فیلترها پیدا نشد. فیلتر را تغییر دهید.</div>`}
+  </section>`;
+}
+
+function profileCard(p){
+  return `<aside class="card profile">
+    <div class="psy-head">${avatar(p,true)}<div><h2>${esc(p.name)}</h2><div class="muted small">${esc(p.title)}</div></div></div>
+    <p class="bio">${esc(p.bio)}</p>
+    <div class="row" style="gap:6px">${p.approaches.map(a=>`<span class="tag">${esc(a)}</span>`).join('')}</div>
+    <dl class="meta">
+      <dt>شمارهٔ نظام</dt><dd class="num">${esc(p.license)}</dd>
+      <dt>مدت جلسه</dt><dd>${fa(p.duration)} دقیقه</dd>
+      <dt>نوع جلسه</dt><dd>${p.modes.join(' و ')}</dd>
+      <dt>هزینه</dt><dd class="num">${money(p.price)}</dd>
+    </dl>
+  </aside>`;
+}
+
+function vSlots(){
+  const p=psy(U.psyId);
+  const ds=days(14);
+  if(!U.date){const f=ds.find(k=>freeSlots(p,k).length);U.date=f||ds[0]}
+  const offered=slotsFor(p,U.date);
+  return `
+  <div class="row"><button type="button" class="link back" data-act="go" data-step="list">→ بازگشت به فهرست روانشناسان</button></div>
+  ${stepsBar(1)}
+  <div class="split">
+    ${profileCard(p)}
+    <section class="stack" style="gap:18px">
+      <div class="card stack">
+        <div class="row" style="justify-content:space-between"><h2>انتخاب روز</h2><span class="muted small">دو هفتهٔ پیش رو · جمعه‌ها تعطیل</span></div>
+        <div class="dates" role="group" aria-label="روزها">
+          ${ds.map(k=>{const f=freeSlots(p,k).length;return `<button type="button" class="date" data-act="date" data-k="${k}" ${f?'':'disabled'} aria-pressed="${U.date===k}">
+            <span class="dn">${fmt(k,{weekday:'long'})}</span><span class="dd">${fmt(k,{day:'numeric'})}</span><span class="dm">${fmt(k,{month:'long'})}</span>
+            <span class="df">${f?fa(f)+' نوبت خالی':'بدون نوبت'}</span></button>`}).join('')}
+        </div>
+      </div>
+      <div class="card stack">
+        <div class="row" style="justify-content:space-between"><h2>ساعت‌های ${shortDate(U.date)}</h2>
+          <div class="legend"><span><i style="background:var(--surface)"></i>آزاد</span><span><i style="background:var(--surface-2)"></i>رزرو شده</span></div></div>
+        ${offered.length?`<div class="slots">${offered.map(t=>{const b=isBooked(p.id,U.date,t);return `<button type="button" class="slot" data-act="time" data-t="${t}" ${b?'disabled':''} aria-pressed="${U.time===t}">${fa(t)}<small>${b?'رزرو شده':'تا '+fa(toTime(toMin(t)+p.duration))}</small></button>`}).join('')}</div>`
+          :`<p class="muted">در این روز زمانی برای رزرو تعریف نشده است.</p>`}
+      </div>
+      <div class="card summary">
+        <div class="sumrow"><span>روانشناس</span><b>${esc(p.name)}</b></div>
+        <div class="sumrow"><span>زمان</span><b>${U.time?`${shortDate(U.date)}، ساعت ${fa(U.time)}`:'هنوز انتخاب نشده'}</b></div>
+        <div class="sumrow"><span>مبلغ قابل پرداخت</span><b class="num">${money(p.price)}</b></div>
+        <button type="button" class="btn" data-act="go" data-step="form" ${U.time?'':'disabled'}>ادامه و ثبت مشخصات</button>
+      </div>
+    </section>
+  </div>`;
+}
+
+function summaryCard(p){
+  return `<aside class="card summary">
+    <h3>خلاصهٔ نوبت</h3>
+    <div class="psy-head">${avatar(p)}<div><b>${esc(p.name)}</b><div class="muted small">${esc(p.title)}</div></div></div>
+    <div class="sumrow"><span>تاریخ</span><b>${fullDate(U.date)}</b></div>
+    <div class="sumrow"><span>ساعت</span><b class="num">${fa(U.time)} تا ${fa(toTime(toMin(U.time)+p.duration))}</b></div>
+    <div class="sumrow"><span>مبلغ</span><b class="num total">${money(p.price)}</b></div>
+    <p class="muted small">لغو تا ۲۴ ساعت پیش از جلسه با بازگشت کامل وجه انجام می‌شود.</p>
+  </aside>`;
+}
+
+function vForm(){
+  const p=psy(U.psyId);const f=U.form;if(!f.mode||!p.modes.includes(f.mode))f.mode=p.modes[0];
+  return `
+  <div class="row"><button type="button" class="link back" data-act="go" data-step="slots">→ تغییر زمان</button></div>
+  ${stepsBar(2)}
+  <div class="split" style="grid-template-columns:1fr 340px">
+    <form class="card stack" id="patient-form" novalidate>
+      <h2>مشخصات مراجع</h2>
+      <div class="grid2">
+        <label class="f">نام و نام خانوادگی<input class="input" id="pf-name" name="name" value="${esc(f.name)}" autocomplete="name" placeholder="مثلاً مریم احمدی"><span class="err" id="e-name"></span></label>
+        <label class="f">شمارهٔ موبایل (برای پیامک تأیید)<input class="input ltr" id="pf-phone" name="phone" value="${esc(f.phone)}" inputmode="tel" placeholder="09121234567"><span class="err" id="e-phone"></span></label>
+        <label class="f">ایمیل (اختیاری)<input class="input ltr" id="pf-email" name="email" value="${esc(f.email)}" inputmode="email" placeholder="name@example.com"><span class="err" id="e-email"></span></label>
+        <label class="f">نوع جلسه<select class="input" id="pf-mode" name="mode">${p.modes.map(m=>`<option ${f.mode===m?'selected':''}>${m}</option>`).join('')}</select><span class="err"></span></label>
+      </div>
+      <label class="f">توضیح کوتاه برای روانشناس (اختیاری)<textarea class="input" id="pf-note" name="note" placeholder="دلیل مراجعه را در یک یا دو جمله بنویسید. این متن فقط برای روانشناس شما قابل مشاهده است.">${esc(f.note)}</textarea></label>
+      <label class="switch" style="font-weight:500"><input type="checkbox" id="pf-consent" name="consent" ${f.consent?'checked':''}> قوانین لغو نوبت و محرمانگی اطلاعات را می‌پذیرم.</label>
+      <span class="err" id="e-consent"></span>
+      <div class="row"><button class="btn" type="submit">پرداخت ${money(p.price)}</button><span class="muted small">به درگاه پرداخت آزمایشی منتقل می‌شوید.</span></div>
+    </form>
+    ${summaryCard(p)}
+  </div>`;
+}
+
+function vGateway(){
+  const p=psy(U.psyId);const g=U.pay;
+  if(g.processing)return `<div class="gw"><div class="processing"><div class="spinner"></div><b>در حال تأیید تراکنش…</b><span class="muted small">لطفاً صفحه را نبندید.</span></div></div>`;
+  const left=Math.max(0,Math.round((g.expires-Date.now())/1000));
+  return `
+  ${stepsBar(3)}
+  <div class="gw" role="region" aria-label="درگاه پرداخت">
+    <div class="gw-head"><b>درگاه پرداخت اینترنتی (آزمایشی)</b><span class="gw-timer" id="pay-timer">${fa(pad(Math.floor(left/60)))}:${fa(pad(left%60))}</span></div>
+    <form class="gw-body" id="pay-form" novalidate>
+      <div class="gw-amount"><div><div class="muted small">پذیرنده</div><b>کلینیک آرامش‌نو</b></div><div><div class="muted small">مبلغ</div><b class="num total">${money(p.price)}</b></div></div>
+      <p class="muted small">این نوبت تا پایان زمان بالا برای شما نگه داشته شده است. در نسخهٔ نمایشی هر شمارهٔ ۱۶ رقمی پذیرفته می‌شود؛ مثلاً <span class="code">1234 5678 9012 3456</span></p>
+      <label class="f">شمارهٔ کارت<input class="input ltr card-in" id="pay-card" maxlength="19" inputmode="numeric" placeholder="____ ____ ____ ____" value="${esc(g.card||'')}" autocomplete="off"><span class="err" id="e-card"></span></label>
+      <div class="exp">
+        <label class="f">CVV2<input class="input ltr" id="pay-cvv" maxlength="4" inputmode="numeric" value="${esc(g.cvv||'')}" autocomplete="off"></label>
+        <label class="f">ماه انقضا<input class="input ltr" id="pay-mm" maxlength="2" inputmode="numeric" placeholder="07" value="${esc(g.mm||'')}" autocomplete="off"></label>
+        <label class="f">سال انقضا<input class="input ltr" id="pay-yy" maxlength="2" inputmode="numeric" placeholder="08" value="${esc(g.yy||'')}" autocomplete="off"></label>
+      </div>
+      <span class="err" id="e-exp"></span>
+      <label class="f">رمز دوم پویا
+        <div class="otp"><input class="input ltr" id="pay-otp" maxlength="6" inputmode="numeric" value="${esc(g.otpIn||'')}" autocomplete="one-time-code"><button type="button" class="btn ghost sm" data-act="otp">${g.otp?'ارسال دوباره':'دریافت رمز پویا'}</button></div>
+      </label>
+      <span class="err" id="e-otp"></span>
+      <div class="row"><button class="btn" type="submit">پرداخت</button><button type="button" class="btn ghost" data-act="paycancel">انصراف</button></div>
+    </form>
+  </div>`;
+}
+
+function vFailed(){
+  const p=psy(U.psyId);
+  return `<div class="card stack" style="max-width:560px;margin:0 auto;text-align:center;justify-items:center">
+    <span class="chip bad">پرداخت ناموفق</span>
+    <h2>${esc(U.failReason||'تراکنش لغو شد')}</h2>
+    <p class="muted">هیچ مبلغی از حساب شما کسر نشده است. نوبت ${shortDate(U.date)} ساعت ${fa(U.time)} با ${esc(p.name)} هنوز رزرو نشده است.</p>
+    <div class="row" style="justify-content:center"><button type="button" class="btn" data-act="go" data-step="form">تلاش دوباره</button><button type="button" class="btn ghost" data-act="go" data-step="slots">انتخاب زمان دیگر</button></div>
+  </div>`;
+}
+
+function chips(ch){return ch.map(c=>`<span class="chip ${c==='پیامک'?'plum':c==='ایمیل'?'warn':'info'}">${c}</span>`).join(' ')}
+function vSuccess(){
+  const b=S.bookings.find(x=>x.id===U.last);if(!b){U.step='list';return vList()}
+  const p=psy(b.psyId);
+  const sent=S.notifications.filter(n=>n.bookingId===b.id);
+  const box=(who,label)=>{const n=sent.find(x=>x.whoKey===who);return `<div class="card stack">
+      <div class="who"><b>${label}</b><span class="chip ok">ارسال شد</span></div>
+      ${n?`<div>${chips(n.channels)}</div><div class="msg">${esc(n.body)}</div>`:'<p class="muted small">ارسال برای این گیرنده در تنظیمات غیرفعال است.</p>'}
+    </div>`};
+  return `
+  <div class="card stack" style="gap:18px">
+    <div class="success-head">
+      <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <h1>نوبت شما قطعی شد</h1>
+      <p class="muted">کد رهگیری: <span class="code">${b.code}</span></p>
+    </div>
+    <div class="grid2">
+      <div class="sumrow"><span>روانشناس</span><b>${esc(p.name)}</b></div>
+      <div class="sumrow"><span>زمان</span><b>${shortDate(b.date)}، ساعت ${fa(b.time)}</b></div>
+      <div class="sumrow"><span>نوع جلسه</span><b>${b.mode}</b></div>
+      <div class="sumrow"><span>مبلغ پرداخت‌شده</span><b class="num">${money(b.amount)}</b></div>
+    </div>
+  </div>
+  <section class="stack">
+    <h2>اعلان‌های ارسال‌شده برای این رزرو</h2>
+    <p class="muted small">برای دیدن صندوق اعلان هر نفر، از نوار بالا به «پنل روانشناس» یا «پنل مدیر» بروید.</p>
+    <div class="dispatch">${box('patient','مراجع')}${box('psy','روانشناس')}${box('manager','مدیر کلینیک')}</div>
+  </section>
+  <div class="row"><button type="button" class="btn" data-act="go" data-step="list">رزرو نوبت دیگر</button></div>`;
+}
+
+/* ---------- views: psychologist ---------- */
+function vPsyLogin(){
+  return `<form class="card stack login" id="psy-login">
+    <h2>ورود روانشناس</h2>
+    <p class="muted small">در نسخهٔ نمایشی رمز همهٔ روانشناسان <span class="code">1234</span> است.</p>
+    <label class="f">روانشناس<select class="input" id="pl-id">${S.psychologists.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></label>
+    <label class="f">رمز عبور<input class="input ltr" id="pl-pass" type="password" value="1234"></label>
+    <span class="err" id="e-pl"></span>
+    <button class="btn" type="submit">ورود به پنل</button>
+  </form>`;
+}
+function vPsy(){
+  if(!U.psyLogged)return vPsyLogin();
+  const p=psy(U.psyLogged);
+  const up=S.bookings.filter(b=>b.psyId===p.id&&active(b)&&b.date>=keyOf(today()));
+  const unread=inbox().filter(n=>!n.read).length;
+  const tab=U.psyTab;
+  return `
+  <div class="panel-head">${avatar(p)}<div class="grow"><h2>${esc(p.name)}</h2><div class="muted small">${esc(p.title)} · ${fa(up.length)} نوبت پیش رو${unread?` · <b style="color:var(--bad)">${fa(unread)} اعلان خوانده‌نشده</b>`:''}</div></div>
+    <button type="button" class="btn ghost sm" data-act="drawer">اعلان‌ها</button><button type="button" class="btn ghost sm" data-act="psylogout">خروج</button></div>
+  <div class="tabs" role="tablist">
+    ${[['bookings','نوبت‌های من'],['avail','زمان‌های در دسترس'],['profile','پروفایل']].map(([k,l])=>`<button type="button" role="tab" data-act="psytab" data-v="${k}" aria-selected="${tab===k}">${l}</button>`).join('')}
+  </div>
+  ${tab==='bookings'?psyBookings(p,up):tab==='avail'?psyAvail(p):psyProfile(p)}`;
+}
+function psyBookings(p,up){
+  if(!up.length)return `<div class="card muted">نوبت پیش رویی ندارید. زمان‌های خالی شما در صفحهٔ رزرو نمایش داده می‌شود.</div>`;
+  up.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+  let html='<div class="booking-list">',last='';
+  up.forEach(b=>{
+    if(b.date!==last){html+=`<div class="day-label">${fullDate(b.date)}</div>`;last=b.date}
+    html+=`<div class="bk"><div class="t">${fa(b.time)}</div><div><b>${esc(b.patient.name)}</b> <span class="muted small num" dir="ltr">${fa(b.patient.phone)}</span>
+      ${b.note?`<div class="muted small">«${esc(b.note)}»</div>`:''}</div>
+      <div class="row" style="gap:6px"><span class="chip ${b.mode==='آنلاین'?'plum':'info'}">${b.mode}</span><span class="chip ok">پرداخت‌شده</span><span class="code small">${b.code}</span></div></div>`;
+  });
+  return html+'</div>';
+}
+function psyAvail(p){
+  const ds=days(21);
+  if(!U.availDate||!ds.includes(U.availDate))U.availDate=ds.find(d=>slotsFor(p,d).length)||ds[0];
+  const k=U.availDate;const ov=p.overrides[k];const offered=ov?ov:weeklySlots(p,k);
+  const opts=(v)=>HOURS.map(h=>`<option value="${h}" ${h===v?'selected':''}>${fa(h)}</option>`).join('');
+  return `
+  <div class="card stack">
+    <div class="row" style="justify-content:space-between"><h3>برنامهٔ هفتگی ثابت</h3><span class="muted small">جلسات یک‌ساعته (${fa(p.duration)} دقیقه جلسه + ۱۰ دقیقه استراحت)</span></div>
+    <form class="week" id="weekly-form">
+      ${p.weekly.map((w,i)=>`<div class="wrow">
+        <label class="switch"><input type="checkbox" id="w-on-${i}" ${w.on?'checked':''}> ${WEEK[i]}</label>
+        <div class="times"><span class="muted small">از</span><select class="input" id="w-s-${i}">${opts(w.start)}</select><span class="muted small">تا</span><select class="input" id="w-e-${i}">${opts(w.end)}</select>
+        <span class="muted small" id="w-c-${i}">${w.on?fa(weeklyCount(w))+' جلسه':'تعطیل'}</span></div></div>`).join('')}
+      <div class="row"><button class="btn" type="submit">ذخیرهٔ برنامهٔ هفتگی</button><span class="muted small">تغییرات فوراً در صفحهٔ رزرو مراجعان اعمال می‌شود.</span></div>
+    </form>
+  </div>
+  <div class="card stack">
+    <div class="row" style="justify-content:space-between"><h3>تغییر برای یک روز مشخص</h3><span class="muted small">مرخصی، جلسهٔ اضافه یا جابه‌جایی</span></div>
+    <div class="dates">${ds.map(d=>{const n=slotsFor(p,d).length;return `<button type="button" class="date" data-act="adate" data-k="${d}" aria-pressed="${d===k}">
+      <span class="dn">${fmt(d,{weekday:'long'})}</span><span class="dd">${fmt(d,{day:'numeric'})}</span><span class="dm">${fmt(d,{month:'long'})}</span><span class="df">${p.overrides[d]?'تغییر یافته':n?fa(n)+' زمان':'تعطیل'}</span></button>`}).join('')}</div>
+    <div class="row" style="justify-content:space-between">
+      <b>${fullDate(k)}</b>
+      <span class="chip ${ov?'warn':'info'}">${ov?'برنامهٔ اختصاصی این روز':'طبق برنامهٔ هفتگی'}</span>
+    </div>
+    <p class="muted small">روی هر ساعت بزنید تا باز یا بسته شود. ساعت‌های رزرو شده قابل تغییر نیستند؛ برای جابه‌جایی آن‌ها با مدیر کلینیک هماهنگ کنید.</p>
+    <div class="avail-grid">${GRID_HOURS.map(t=>{const bk=isBooked(p.id,k,t);const on=offered.includes(t);
+      return `<button type="button" class="av ${bk?'booked':on?'on':'off'}" data-act="toggle" data-t="${t}" ${bk?'disabled':''}>${fa(t)}<small>${bk?'رزرو شده':on?'باز':'بسته'}</small></button>`}).join('')}</div>
+    <div class="row">
+      <button type="button" class="btn danger sm" data-act="closeday">بستن همهٔ ساعت‌های آزاد این روز</button>
+      ${ov?`<button type="button" class="btn ghost sm" data-act="resetday">بازگشت به برنامهٔ هفتگی</button>`:''}
+    </div>
+  </div>`;
+}
+function weeklyCount(w){let c=0;for(let m=toMin(w.start);m+60<=toMin(w.end);m+=60)c++;return c}
+function psyProfile(p){
+  return `<form class="card stack" id="profile-form" style="max-width:720px">
+    <h3>ویرایش پروفایل عمومی</h3>
+    <div class="grid2">
+      <label class="f">عنوان تخصصی<input class="input" id="pp-title" value="${esc(p.title)}"></label>
+      <label class="f">هزینهٔ هر جلسه (تومان)<input class="input ltr" id="pp-price" inputmode="numeric" value="${p.price}"></label>
+      <label class="f">موبایل برای دریافت پیامک<input class="input ltr" id="pp-phone" value="${esc(p.phone)}"></label>
+      <label class="f">سابقه (سال)<input class="input ltr" id="pp-years" inputmode="numeric" value="${p.years}"></label>
+    </div>
+    <label class="f">حوزه‌ها و رویکردها (با ویرگول جدا کنید)<input class="input" id="pp-app" value="${esc(p.approaches.join('، '))}"></label>
+    <label class="f">معرفی کوتاه<textarea class="input" id="pp-bio">${esc(p.bio)}</textarea></label>
+    <div class="row"><span class="muted small">نوع جلسه:</span>
+      <label class="switch" style="font-weight:500"><input type="checkbox" id="pp-m1" ${p.modes.includes('حضوری')?'checked':''}> حضوری</label>
+      <label class="switch" style="font-weight:500"><input type="checkbox" id="pp-m2" ${p.modes.includes('آنلاین')?'checked':''}> آنلاین</label></div>
+    <span class="err" id="e-pp"></span>
+    <div class="row"><button class="btn" type="submit">ذخیرهٔ پروفایل</button></div>
+  </form>`;
+}
+
+/* ---------- views: manager ---------- */
+function vMgr(){
+  if(!U.mgrLogged)return `<form class="card stack login" id="mgr-login">
+    <h2>ورود مدیر کلینیک</h2><p class="muted small">رمز نمایشی: <span class="code">admin</span></p>
+    <label class="f">رمز عبور<input class="input ltr" id="ml-pass" type="password" value="admin"></label><span class="err" id="e-ml"></span>
+    <button class="btn" type="submit">ورود</button></form>`;
+  const t=keyOf(today());const wk7=keyOf(addDays(today(),7));
+  const act=S.bookings.filter(active);
+  const ym=k=>fmt(k,{year:'numeric',month:'numeric'});const curM=ym(t);
+  const monthRev=act.filter(b=>ym(b.date)===curM).reduce((s,b)=>s+b.amount,0);
+  const unread=inbox().filter(n=>!n.read).length;
+  const tab=U.mgrTab;
+  return `
+  <div class="panel-head"><div class="grow"><h2>پنل مدیریت کلینیک</h2><div class="muted small">${fullDate(t)}</div></div>
+    <button type="button" class="btn ghost sm" data-act="drawer">اعلان‌ها${unread?` (${fa(unread)})`:''}</button><button type="button" class="btn ghost sm" data-act="mgrlogout">خروج</button></div>
+  <div class="kpis">
+    <div class="kpi"><div class="l">نوبت‌های امروز</div><div class="v">${fa(act.filter(b=>b.date===t).length)}</div></div>
+    <div class="kpi"><div class="l">نوبت‌های ۷ روز آینده</div><div class="v">${fa(act.filter(b=>b.date>=t&&b.date<wk7).length)}</div></div>
+    <div class="kpi"><div class="l">درآمد ماه ${fmt(t,{month:'long'})}</div><div class="v">${money(monthRev).replace(' تومان','')}<span class="small muted"> تومان</span></div></div>
+    <div class="kpi"><div class="l">لغو و بازپرداخت</div><div class="v">${fa(S.bookings.length-act.length)}</div></div>
+  </div>
+  <div class="tabs" role="tablist">${[['bookings','همهٔ رزروها'],['team','روانشناسان'],['settings','تنظیمات اعلان']].map(([k,l])=>`<button type="button" role="tab" data-act="mgrtab" data-v="${k}" aria-selected="${tab===k}">${l}</button>`).join('')}</div>
+  ${tab==='bookings'?mgrBookings():tab==='team'?mgrTeam():mgrSettings()}`;
+}
+function mgrBookings(){
+  const list=S.bookings.filter(b=>!U.mgrPsy||b.psyId===U.mgrPsy).sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
+  return `<div class="row"><label class="f" style="grid-auto-flow:column;align-items:center">روانشناس:
+    <select class="input" id="mgr-psy" style="width:auto"><option value="">همه</option>${S.psychologists.map(p=>`<option value="${p.id}" ${U.mgrPsy===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}</select></label>
+    <span class="muted small">${fa(list.length)} رزرو</span></div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>تاریخ</th><th>ساعت</th><th>مراجع</th><th>موبایل</th><th>روانشناس</th><th>نوع</th><th>مبلغ</th><th>کد رهگیری</th><th>وضعیت</th><th></th></tr></thead>
+    <tbody>${list.map(b=>{const p=psy(b.psyId);const past=b.date<keyOf(today());return `<tr>
+      <td>${shortDate(b.date)}</td><td>${fa(b.time)}</td><td>${esc(b.patient.name)}</td><td dir="ltr" style="text-align:right">${fa(b.patient.phone)}</td>
+      <td>${esc(p?p.name:'-')}</td><td>${b.mode}</td><td>${money(b.amount)}</td><td><span class="code small">${b.code}</span></td>
+      <td>${b.status==='cancelled'?'<span class="chip bad">لغو و بازپرداخت</span>':past?'<span class="chip info">برگزار شد</span>':'<span class="chip ok">پرداخت‌شده</span>'}</td>
+      <td>${b.status!=='cancelled'&&!past?(U.confirmCancel===b.id?`<button type="button" class="btn danger sm" data-act="cancelok" data-id="${b.id}">تأیید لغو</button> <button type="button" class="link" data-act="cancelno">انصراف</button>`:`<button type="button" class="btn ghost sm" data-act="cancel" data-id="${b.id}">لغو نوبت</button>`):''}</td></tr>`}).join('')||'<tr><td colspan="10" class="muted">رزروی ثبت نشده است.</td></tr>'}</tbody>
+  </table></div>`;
+}
+function mgrTeam(){
+  const ds=days(7);
+  return `<div class="tbl-wrap"><table><thead><tr><th>روانشناس</th><th>هزینهٔ جلسه</th><th>زمان‌های تعریف‌شده (۷ روز)</th><th>رزرو شده</th><th>ضریب اشغال</th><th>روزهای تغییریافته</th></tr></thead><tbody>
+  ${S.psychologists.map(p=>{let off=0,bk=0;ds.forEach(k=>{const sl=slotsFor(p,k);off+=sl.length;bk+=sl.filter(t=>isBooked(p.id,k,t)).length});
+    const pct=off?Math.round(bk/off*100):0;
+    return `<tr><td><b>${esc(p.name)}</b></td><td>${money(p.price)}</td><td>${fa(off)}</td><td>${fa(bk)}</td>
+      <td><div class="row" style="gap:8px;flex-wrap:nowrap"><div class="bar"><i style="width:${pct}%"></i></div>${fa(pct)}٪</div></td><td>${fa(Object.keys(p.overrides).length)}</td></tr>`}).join('')}
+  </tbody></table></div>`;
+}
+function mgrSettings(){
+  const s=S.settings;const r=(id,l,d)=>`<label class="switch" style="font-weight:500;align-items:flex-start"><input type="checkbox" data-set="${id}" ${s[id]?'checked':''}><span><b>${l}</b><br><span class="muted small">${d}</span></span></label>`;
+  return `<div class="card stack" style="max-width:720px">
+    <p class="muted small">اعلان داخل پنل برای روانشناس و مدیر همیشه فعال است. کانال‌های زیر را می‌توانید روشن یا خاموش کنید.</p>
+    ${r('patientSms','پیامک تأیید به مراجع','شامل تاریخ، ساعت، نوع جلسه و کد رهگیری')}
+    ${r('patientEmail','ایمیل تأیید به مراجع','فقط اگر مراجع ایمیل وارد کرده باشد')}
+    ${r('psySms','پیامک نوبت جدید به روانشناس','به شماره‌ای که در پروفایل روانشناس ثبت شده')}
+    ${r('managerEmail','ایمیل گزارش رزرو به مدیر','برای هر پرداخت موفق یا لغو نوبت')}
+    ${r('reminder','پیامک یادآوری ۲۴ ساعت پیش از جلسه','در نسخهٔ واقعی با زمان‌بند سرور ارسال می‌شود')}
+  </div>`;
+}
+
+/* ---------- drawer ---------- */
+function renderDrawer(){
+  const root=document.getElementById('drawer-root');
+  if(!U.drawer){root.innerHTML='';return}
+  const list=inbox();
+  const title=U.role==='visitor'?'پیامک‌ها و ایمیل‌های مراجع':U.role==='psy'?'اعلان‌های روانشناس':'اعلان‌های مدیر';
+  const needLogin=(U.role==='psy'&&!U.psyLogged)||(U.role==='manager'&&!U.mgrLogged);
+  root.innerHTML=`<div class="scrim" data-act="drawer"></div><aside class="drawer" role="dialog" aria-label="${title}">
+    <div class="drawer-h"><h3>${title}</h3><button type="button" class="btn ghost sm" data-act="drawer">بستن</button></div>
+    <div class="drawer-b">${needLogin?'<p class="muted">برای دیدن اعلان‌ها ابتدا وارد پنل شوید.</p>':list.length?list.map(n=>`<div class="note ${n.read?'':'unread'}">
+      <div class="nt"><b>${esc(n.title)}</b><span class="muted small">${stamp(n.at)}</span></div>
+      <div>${chips(n.channels)}${n.toLabel?` <span class="muted small">به ${esc(n.toLabel)}</span>`:''}</div><p>${esc(n.body)}</p></div>`).join(''):'<p class="muted">اعلانی وجود ندارد.</p>'}</div></aside>`;
+  list.forEach(n=>n.read=true);save();
+  setTimeout(updateBell,1500);
+}
+function updateBell(){
+  const c=U.drawer?0:inbox().filter(n=>!n.read).length;
+  const el=document.getElementById('bell-count');el.hidden=!c;el.textContent=fa(c);
+}
+
+/* ---------- render ---------- */
+function render(){
+  ['visitor','psy','manager'].forEach(r=>document.getElementById('role-'+r).setAttribute('aria-pressed',U.role===r));
+  const app=document.getElementById('app');
+  let h='';
+  if(U.role==='visitor'){
+    h={list:vList,slots:vSlots,form:vForm,gateway:vGateway,failed:vFailed,success:vSuccess}[U.step]();
+  }else if(U.role==='psy')h=vPsy();else h=vMgr();
+  app.innerHTML=h;
+  updateBell();renderDrawer();
+}
+
+/* ---------- booking finalize ---------- */
+function finalize(){
+  const p=psy(U.psyId);const f=U.form;
+  if(isBooked(p.id,U.date,U.time)||!slotsFor(p,U.date).includes(U.time)){
+    U.pay=null;U.step='failed';U.failReason='این زمان همزمان توسط فرد دیگری رزرو شد';render();return;
+  }
+  const b=mkBooking(p,U.date,U.time,f);S.bookings.push(b);
+  const when=`${shortDate(b.date)} ساعت ${fa(b.time)}`;
+  const st=S.settings;
+  const pc=[];if(st.patientSms)pc.push('پیامک');if(st.patientEmail&&b.patient.email)pc.push('ایمیل');
+  if(pc.length)notify('patient',pc,'تأیید نوبت',`${b.patient.name} عزیز، نوبت ${b.mode} شما با ${p.name} برای ${when} ثبت و پرداخت شد. کد رهگیری: ${b.code}. ${b.mode==='آنلاین'?'لینک جلسه ۱۰ دقیقه پیش از شروع پیامک می‌شود.':'نشانی: تهران، خیابان ولیعصر، کوچهٔ آرامش، پلاک ۱۲.'} کلینیک آرامش‌نو`,{bookingId:b.id,whoKey:'patient',toLabel:fa(b.patient.phone)});
+  notify('psy',st.psySms?['پنل','پیامک']:['پنل'],'نوبت جدید',`نوبت جدید ${b.mode}: ${b.patient.name} برای ${when}. مبلغ ${money(b.amount)} پرداخت شد. کد رهگیری ${b.code}.${b.note?' توضیح مراجع: «'+b.note+'»':''}`,{psyId:p.id,bookingId:b.id,whoKey:'psy'});
+  notify('manager',st.managerEmail?['پنل','ایمیل']:['پنل'],'رزرو و پرداخت موفق',`${b.patient.name} (${fa(b.patient.phone)}) نوبت ${b.mode} با ${p.name} را برای ${when} رزرو کرد. مبلغ ${money(b.amount)} واریز شد. کد رهگیری ${b.code}.`,{bookingId:b.id,whoKey:'manager'});
+  save();
+  U.last=b.id;U.pay=null;U.step='success';U.time=null;U.form={name:'',phone:'',email:'',mode:'',note:'',consent:false};
+  render();window.scrollTo(0,0);
+  toast('پرداخت موفق بود. برای مراجع، روانشناس و مدیر اعلان ارسال شد.');
+}
+
+/* ---------- events ---------- */
+const A={
+  role:d=>{U.role=d.role;U.drawer=false;U.confirmCancel=null;render();window.scrollTo(0,0)},
+  drawer:()=>{U.drawer=!U.drawer;render()},
+  filter:d=>{U.filter=d.v;render()},
+  modef:d=>{U.modeFilter=d.v;render()},
+  pick:d=>{U.psyId=d.id;U.date=null;U.time=null;U.step='slots';render();window.scrollTo(0,0)},
+  date:d=>{U.date=d.k;U.time=null;render()},
+  time:d=>{U.time=d.t;render()},
+  go:d=>{if(d.step==='form'&&!U.time)return;U.pay=null;U.step=d.step;if(d.step==='list'){U.time=null}render();window.scrollTo(0,0)},
+  otp:()=>{syncPay();U.pay.otp=String(Math.floor(100000+Math.random()*900000));toast('پیامک بانک: رمز پویای شما '+fa(U.pay.otp)+' است.');render();const o=document.getElementById('pay-otp');if(o)o.focus()},
+  paycancel:()=>{U.pay=null;U.step='failed';U.failReason='پرداخت توسط شما لغو شد';render()},
+  psytab:d=>{U.psyTab=d.v;render()},
+  psylogout:()=>{U.psyLogged=null;U.drawer=false;render()},
+  mgrlogout:()=>{U.mgrLogged=false;U.drawer=false;render()},
+  mgrtab:d=>{U.mgrTab=d.v;U.confirmCancel=null;render()},
+  adate:d=>{U.availDate=d.k;render()},
+  toggle:d=>{const p=psy(U.psyLogged);const k=U.availDate;
+    const cur=(p.overrides[k]||weeklySlots(p,k)).slice();const i=cur.indexOf(d.t);
+    if(i>=0)cur.splice(i,1);else cur.push(d.t);
+    p.overrides[k]=cur.sort();save();render();toast(i>=0?`ساعت ${fa(d.t)} بسته شد.`:`ساعت ${fa(d.t)} برای رزرو باز شد.`)},
+  closeday:()=>{const p=psy(U.psyLogged);const k=U.availDate;
+    const kept=(p.overrides[k]||weeklySlots(p,k)).filter(t=>isBooked(p.id,k,t));p.overrides[k]=kept;
+    notify('manager',['پنل'],'تغییر برنامهٔ روانشناس',`${p.name} ساعت‌های آزاد ${fullDate(k)} را بست.${kept.length?' '+fa(kept.length)+' نوبت رزرو شدهٔ این روز سر جای خود باقی است.':''}`);
+    save();render();toast('ساعت‌های آزاد این روز بسته شد و به مدیر اطلاع داده شد.')},
+  resetday:()=>{const p=psy(U.psyLogged);delete p.overrides[U.availDate];save();render();toast('این روز به برنامهٔ هفتگی برگشت.')},
+  cancel:d=>{U.confirmCancel=d.id;render()},
+  cancelno:()=>{U.confirmCancel=null;render()},
+  cancelok:d=>{const b=S.bookings.find(x=>x.id===d.id);if(!b)return;b.status='cancelled';U.confirmCancel=null;const p=psy(b.psyId);
+    const when=`${shortDate(b.date)} ساعت ${fa(b.time)}`;
+    if(S.settings.patientSms)notify('patient',['پیامک'],'لغو نوبت',`${b.patient.name} عزیز، نوبت شما با ${p.name} در ${when} لغو شد و مبلغ ${money(b.amount)} طی ۷۲ ساعت کاری به کارت شما بازمی‌گردد. کد رهگیری ${b.code}.`,{toLabel:fa(b.patient.phone)});
+    notify('psy',['پنل'],'لغو نوبت',`نوبت ${b.patient.name} در ${when} توسط مدیر کلینیک لغو شد. این ساعت دوباره برای رزرو باز است.`,{psyId:p.id});
+    notify('manager',['پنل'],'بازپرداخت ثبت شد',`بازپرداخت ${money(b.amount)} برای کد ${b.code} در صف تسویه قرار گرفت.`);
+    save();render();toast('نوبت لغو شد و به مراجع و روانشناس اطلاع داده شد.')},
+  reset:()=>{try{localStorage.removeItem(LS)}catch(e){}S=seed();save();
+    Object.assign(U,{step:'list',psyId:null,date:null,time:null,pay:null,last:null,drawer:false,confirmCancel:null,psyLogged:null,mgrLogged:false});render();toast('داده‌های نمایشی بازنشانی شد.')},
+};
+document.addEventListener('click',e=>{const a=e.target.closest('[data-act]');if(!a)return;const f=A[a.dataset.act];if(f){e.preventDefault();f(a.dataset,a)}});
+
+function syncPay(){if(!U.pay)return;const v=id=>{const el=document.getElementById(id);return el?el.value:''};
+  Object.assign(U.pay,{card:v('pay-card'),cvv:v('pay-cvv'),mm:v('pay-mm'),yy:v('pay-yy'),otpIn:v('pay-otp')})}
+function setErr(id,msg){const el=document.getElementById(id);if(el)el.textContent=msg||''}
+
+const F={
+  'patient-form':()=>{
+    const f=U.form;const v=id=>document.getElementById(id).value.trim();
+    f.name=v('pf-name');f.phone=toEn(v('pf-phone')).replace(/[\s-]/g,'');f.email=v('pf-email');f.mode=v('pf-mode');f.note=v('pf-note');f.consent=document.getElementById('pf-consent').checked;
+    let ok=true;
+    setErr('e-name',f.name.length<3?(ok=false,'نام و نام خانوادگی را کامل بنویسید.'):'');
+    setErr('e-phone',/^09\d{9}$/.test(f.phone)?'':(ok=false,'شمارهٔ موبایل باید ۱۱ رقم و با ۰۹ شروع شود.'));
+    setErr('e-email',!f.email||/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)?'':(ok=false,'ایمیل معتبر نیست. می‌توانید آن را خالی بگذارید.'));
+    setErr('e-consent',f.consent?'':(ok=false,'برای ادامه، قوانین را تأیید کنید.'));
+    if(!ok)return;
+    if(isBooked(U.psyId,U.date,U.time)){toast('این زمان همین الان رزرو شد. لطفاً زمان دیگری انتخاب کنید.');U.time=null;U.step='slots';render();return}
+    U.pay={expires:Date.now()+10*60*1000,otp:null};U.step='gateway';render();window.scrollTo(0,0);
+  },
+  'pay-form':()=>{
+    syncPay();const g=U.pay;const card=toEn(g.card).replace(/\D/g,'');let ok=true;
+    setErr('e-card',card.length===16?'':(ok=false,'شمارهٔ کارت باید ۱۶ رقم باشد.'));
+    const mm=+toEn(g.mm),cvv=toEn(g.cvv);
+    setErr('e-exp',(/^\d{3,4}$/.test(cvv)&&mm>=1&&mm<=12&&/^\d{2}$/.test(toEn(g.yy)))?'':(ok=false,'CVV2 (۳ یا ۴ رقم)، ماه (۱ تا ۱۲) و سال انقضا (۲ رقم) را وارد کنید.'));
+    setErr('e-otp',!g.otp?(ok=false,'ابتدا «دریافت رمز پویا» را بزنید.'):toEn(g.otpIn)===g.otp?'':(ok=false,'رمز پویا درست نیست.'));
+    if(!ok)return;
+    g.processing=true;render();setTimeout(finalize,1400);
+  },
+  'psy-login':()=>{
+    if(document.getElementById('pl-pass').value!=='1234'){setErr('e-pl','رمز عبور درست نیست. رمز نمایشی ۱۲۳۴ است.');return}
+    U.psyLogged=document.getElementById('pl-id').value;U.psyTab='bookings';U.availDate=null;render();
+  },
+  'mgr-login':()=>{
+    if(document.getElementById('ml-pass').value!=='admin'){setErr('e-ml','رمز عبور درست نیست. رمز نمایشی admin است.');return}
+    U.mgrLogged=true;render();
+  },
+  'weekly-form':()=>{
+    const p=psy(U.psyLogged);const nw=[];
+    for(let i=0;i<7;i++){const on=document.getElementById('w-on-'+i).checked,s=document.getElementById('w-s-'+i).value,e=document.getElementById('w-e-'+i).value;
+      if(on&&toMin(e)-toMin(s)<60){toast(`${WEEK[i]}: ساعت پایان باید دست‌کم یک ساعت بعد از شروع باشد.`);return}
+      nw.push({on,start:s,end:e})}
+    p.weekly=nw;
+    notify('manager',['پنل'],'تغییر برنامهٔ روانشناس',`${p.name} برنامهٔ هفتگی خود را به‌روز کرد: ${nw.map((w,i)=>w.on?`${WEEK[i]} ${fa(w.start)}–${fa(w.end)}`:null).filter(Boolean).join('، ')||'همهٔ روزها تعطیل'}.`);
+    save();render();toast('برنامهٔ هفتگی ذخیره شد و به مدیر کلینیک اطلاع داده شد.');
+  },
+  'profile-form':()=>{
+    const p=psy(U.psyLogged);const v=id=>document.getElementById(id).value.trim();
+    const price=+toEn(v('pp-price')).replace(/\D/g,'');const modes=[];
+    if(document.getElementById('pp-m1').checked)modes.push('حضوری');if(document.getElementById('pp-m2').checked)modes.push('آنلاین');
+    if(!price||price<100000){setErr('e-pp','هزینهٔ جلسه را به تومان وارد کنید (حداقل ۱۰۰٬۰۰۰).');return}
+    if(!modes.length){setErr('e-pp','دست‌کم یک نوع جلسه را انتخاب کنید.');return}
+    const changedPrice=price!==p.price;
+    Object.assign(p,{title:v('pp-title')||p.title,price,phone:toEn(v('pp-phone')),years:+toEn(v('pp-years'))||p.years,bio:v('pp-bio'),modes,
+      approaches:v('pp-app').split(/[،,]/).map(s=>s.trim()).filter(Boolean)});
+    if(changedPrice)notify('manager',['پنل'],'تغییر تعرفه',`${p.name} هزینهٔ هر جلسه را به ${money(price)} تغییر داد.`);
+    save();render();toast('پروفایل ذخیره شد و در صفحهٔ رزرو نمایش داده می‌شود.');
+  },
+};
+document.addEventListener('submit',e=>{const f=F[e.target.id];if(f){e.preventDefault();f()}});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.id==='mgr-psy'){U.mgrPsy=t.value;render()}
+  if(t.dataset&&t.dataset.set){S.settings[t.dataset.set]=t.checked;save();toast('تنظیمات اعلان ذخیره شد.')}
+  const m=t.id&&t.id.match(/^w-(on|s|e)-(\d)$/);
+  if(m){const i=m[2];const on=document.getElementById('w-on-'+i).checked;const c=weeklyCount({start:document.getElementById('w-s-'+i).value,end:document.getElementById('w-e-'+i).value});
+    document.getElementById('w-c-'+i).textContent=on?fa(c)+' جلسه':'تعطیل'}
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='pay-card'){const d=toEn(e.target.value).replace(/\D/g,'').slice(0,16);e.target.value=d.replace(/(\d{4})(?=\d)/g,'$1 ')}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&U.drawer){U.drawer=false;render()}});
+
+// payment hold countdown
+setInterval(()=>{
+  if(U.role!=='visitor'||U.step!=='gateway'||!U.pay||U.pay.processing)return;
+  const left=Math.round((U.pay.expires-Date.now())/1000);
+  if(left<=0){U.pay=null;U.step='failed';U.failReason='زمان پرداخت به پایان رسید';render();return}
+  const el=document.getElementById('pay-timer');if(el)el.textContent=fa(pad(Math.floor(left/60)))+':'+fa(pad(left%60));
+},1000);
+
+load();render();
+})();
+</script>
+</body>
+</html>
